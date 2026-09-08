@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary-fixed-dim": "#00dbe9", "on-primary-fixed": "#002022", "on-background": "#dee2f6", "tertiary": "#d8ffe7", "on-secondary-fixed": "#00174b", "on-primary-container": "#006970", "surface-container": "#1a1f2e", "surface-tint": "#00dbe9", "on-tertiary-fixed-variant": "#005236", "on-primary-fixed-variant": "#004f54", "on-error-container": "#ffdad6", "surface-dim": "#0e1321", "surface-container-low": "#161b2a", "on-surface-variant": "#b9cacb", "error-container": "#93000a", "secondary": "#b4c5ff", "primary": "#dbfcff", "inverse-on-surface": "#2b303f", "on-secondary-container": "#cdd7ff", "on-secondary-fixed-variant": "#003ea8", "secondary-fixed": "#dbe1ff", "outline-variant": "#3b494b", "on-secondary": "#002a78", "surface-container-lowest": "#090e1c", "on-tertiary-container": "#006d4a", "surface-bright": "#343948", "background": "#0e1321", "surface-container-high": "#252a39", "primary-fixed": "#7df4ff", "surface": "#0e1321", "surface-container-highest": "#303444", "tertiary-fixed-dim": "#4edea3", "error": "#ffb4ab", "primary-container": "#00f0ff", "secondary-container": "#0053db", "secondary-fixed-dim": "#b4c5ff", "inverse-surface": "#dee2f6", "on-tertiary": "#003824", "tertiary-fixed": "#6ffbbe", "surface-variant": "#303444", "on-error": "#690005", "on-surface": "#dee2f6", "outline": "#849495", "inverse-primary": "#006970", "tertiary-container": "#65f2b5", "on-primary": "#00363a", "on-tertiary-fixed": "#002113" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "space-xs": "0.25rem", "space-2xs": "0.125rem", "gutter-desktop": "1.25rem", "space-xl": "1.5rem", "space-3xl": "3rem", "space-2xl": "2rem", "space-sm": "0.5rem", "margin-screen": "1.5rem", "gutter-mobile": "0.75rem", "space-lg": "1rem", "space-md": "0.75rem" }, fontFamily: { "headline-md": ["Space Grotesk"], "body-md": ["Inter"], "label-caps": ["JetBrains Mono"], "display-lg-mobile": ["Space Grotesk"], "headline-lg-mobile": ["Space Grotesk"], "code-lg": ["JetBrains Mono"], "headline-sm": ["Space Grotesk"], "code-sm": ["JetBrains Mono"], "headline-lg": ["Space Grotesk"], "body-lg": ["Inter"], "code-md": ["JetBrains Mono"], "display-lg": ["Space Grotesk"], "body-sm": ["Inter"] }, fontSize: { "headline-md": ["20px", { lineHeight: "28px", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "label-caps": ["10px", { lineHeight: "12px", letterSpacing: "0.08em", fontWeight: "700" }], "display-lg-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "700" }], "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }], "code-lg": ["14px", { lineHeight: "20px", fontWeight: "500" }], "headline-sm": ["16px", { lineHeight: "24px", letterSpacing: "0.02em", fontWeight: "600" }], "code-sm": ["11px", { lineHeight: "14px", fontWeight: "500" }], "headline-lg": ["30px", { lineHeight: "38px", letterSpacing: "-0.01em", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }], "code-md": ["12px", { lineHeight: "16px", fontWeight: "500" }], "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }], "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#0e1321;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen selection:bg-primary-container selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/85 backdrop-blur-xl shadow-[0_1px_12px_rgba(0,0,0,0.4)]"><div class="h-20 flex flex-col justify-between px-gutter-mobile py-space-xs"><div class="flex items-center justify-between gap-space-xs"><div class="flex items-center gap-space-xs min-w-0"><img alt="CRIMENET AI Emblem" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XDGrhumm-tMy8TzEksk9R2YdC7_V17-NutrvBmYf9NbyVA5CwCdMxLB_2mBNppK3Kpr9E8eGxE9r4ywBnWbM56eIaBlPFHoWtfNBBrt1bmr64ItibyflA3hzyTc5IhfjeTq3WbRUiyulJUIBVLtB7j5ygAnsT6MDNTKo-A_JT6OvhlnoGOl3YfxNBkYb3_9IH4vjyD7ErP5-Rm1qJ3MecM_8aywxEBcvXJ8hdj66g6h9ivPNcA4FEegO0"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight truncate">CRIMENET AI</span><span class="hidden xs:inline-flex items-center gap-space-2xs px-space-xs py-space-2xs rounded bg-tertiary-container/15 text-tertiary font-label-caps text-label-caps uppercase"><span class="w-1.5 h-1.5 rounded-full bg-tertiary-container animate-pulse"></span>SECURE SESSION ✓</span></div><span class="font-label-caps text-label-caps text-on-surface-variant truncate uppercase tracking-wider">Security Ledger</span></div></div><div class="flex items-center gap-space-xs flex-shrink-0"><button class="h-8 px-space-xs rounded bg-surface-container-high/80 text-primary-fixed flex items-center gap-space-2xs hover:bg-surface-container-highest transition-colors"><span class="font-code-sm text-code-sm font-bold tracking-wider">CASE-2026-0142</span><span class="material-symbols-outlined text-[16px] text-primary-fixed-dim">expand_more</span></button><button aria-label="Alerts" class="relative w-11 h-11 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-4 h-4 rounded-full bg-error text-on-error flex items-center justify-center font-label-caps text-label-caps font-bold">3</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div><div class="flex items-center justify-between px-space-2xs pt-space-2xs text-on-surface-variant/80"><div class="flex items-center gap-space-xs truncate"><span class="font-label-caps text-label-caps tracking-widest text-outline uppercase">OFFICIAL / RESTRICTED // SYNTHETIC DEMO</span></div><div class="flex items-center gap-space-2xs font-code-sm text-code-sm text-primary-fixed-dim"><span class="material-symbols-outlined text-[14px]">lock</span><span>SIH-26189</span></div></div></div></header><main class="flex flex-col relative w-full pt-20 pb-32 bg-surface min-h-screen"><div class="flex flex-col w-full px-gutter-mobile gap-space-md">
+<!-- Compliance & Trust Signal Banner -->
+<div class="relative w-full rounded-xl bg-surface-container-lowest p-space-md overflow-hidden shadow-xl">
+<div class="flex flex-col gap-space-xs relative z-10">
+<div class="flex items-center justify-between gap-space-xs flex-wrap">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary-container animate-ping"></span>
+<span class="font-headline-sm text-headline-sm text-tertiary font-bold tracking-tight">ALL LEDGERS VERIFIED &amp; UNBROKEN</span>
+</div>
+<div class="px-space-xs py-space-2xs rounded bg-surface-container-high text-tertiary font-code-sm text-code-sm">
+          BLOCK HEIGHT: #84,209
+        </div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+        Indian Evidence Act §65B &amp; ISO/IEC 27037 Compliance Engine active. Non-repudiation and temporal cryptographic hashing are enforced on all ingested assets.
+      </p>
+<!-- Standard Pills Grid -->
+<div class="grid grid-cols-1 gap-space-xs pt-space-xs">
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-space-xs rounded">
+<span class="material-symbols-outlined text-primary text-[16px]">verified</span>
+<span class="font-code-sm text-code-sm text-on-surface">ISO/IEC 27037 Admissibility Engine</span>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-space-xs rounded">
+<span class="material-symbols-outlined text-primary text-[16px]">security</span>
+<span class="font-code-sm text-code-sm text-on-surface">FIPS 140-2 Level 3 HSM Token</span>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-space-xs rounded">
+<span class="material-symbols-outlined text-tertiary text-[16px]">vpn_key</span>
+<span class="font-code-sm text-code-sm text-on-surface">TLS 1.3 / Quantum-Safe Kyber-1024</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Cryptographic Pipeline Diagram -->
+<div class="w-full rounded-xl bg-surface-container-low p-space-md shadow-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary-container text-[20px]">account_tree</span>
+<span class="font-headline-sm text-headline-sm text-primary">Cryptographic Verification Pipeline</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">LIVE VERIFICATION</span>
+</div>
+<!-- Step Flow Mosaic -->
+<div class="grid grid-cols-1 gap-space-xs">
+<div class="flex items-center gap-space-sm bg-surface-container p-space-xs rounded">
+<div class="w-7 h-7 rounded bg-primary-container/20 text-primary-container flex items-center justify-center font-label-caps text-label-caps">
+          01
+        </div>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="font-label-caps text-label-caps text-primary truncate">SOURCE INGESTION</span>
+<span class="font-code-sm text-code-sm text-on-surface truncate">Raw Telemetry &amp; Physical Extracts</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]">arrow_forward</span>
+</div>
+<div class="flex items-center gap-space-sm bg-surface-container p-space-xs rounded">
+<div class="w-7 h-7 rounded bg-primary-container/20 text-primary-container flex items-center justify-center font-label-caps text-label-caps">
+          02
+        </div>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="font-label-caps text-label-caps text-primary truncate">DUAL ENGINE HASH</span>
+<span class="font-code-sm text-code-sm text-on-surface truncate">SHA-256 + BLAKE3 Micro-Proofs</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]">arrow_forward</span>
+</div>
+<div class="flex items-center gap-space-sm bg-surface-container p-space-xs rounded">
+<div class="w-7 h-7 rounded bg-primary-container/20 text-primary-container flex items-center justify-center font-label-caps text-label-caps">
+          03
+        </div>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="font-label-caps text-label-caps text-tertiary truncate">IMMUTABLE BLOCK STAMP</span>
+<span class="font-code-sm text-code-sm text-on-surface truncate">National Judicial Cyber-Ledger sync</span>
+</div>
+<span class="material-symbols-outlined text-tertiary text-[16px]">done_all</span>
+</div>
+</div>
+<!-- Live Evidence Target Spotlight -->
+<div class="mt-space-xs rounded-lg bg-surface-container-lowest p-space-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="px-space-xs py-space-2xs rounded bg-secondary-container text-on-secondary-container font-label-caps text-label-caps">
+            ACTIVE TARGET
+          </span>
+<span class="font-headline-sm text-headline-sm text-on-surface">EVID-1024</span>
+</div>
+<span class="font-code-sm text-code-sm text-tertiary flex items-center gap-space-2xs">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+          DRIFT: 0.00% (ZERO)
+        </span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Seized CDR &amp; Audio Wire Extraction (.raw dump)</span>
+<!-- Monospace Hash Block -->
+<div class="flex flex-col bg-surface-container-high/60 p-space-xs rounded gap-space-2xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-outline">CURRENT SHA-256 DIGITAL FINGERPRINT</span>
+<button class="flex items-center gap-space-2xs text-primary-fixed-dim hover:text-primary transition-colors" id="copyHashBtn">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span class="font-label-caps text-label-caps">COPY HASH</span>
+</button>
+</div>
+<p class="font-code-sm text-code-sm text-primary font-bold break-all" id="hashValue">
+          a8f47b2c9e10d8a4f5b3c2e19d84a7e3b1c5d9e0f4a8b7c6d5e4f3a2b1c09c21
+        </p>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant text-code-sm font-code-sm pt-space-2xs">
+<span>LEDGER INDEX: #84,209</span>
+<span>2026-04-26 09:14:02 UTC</span>
+</div>
+<!-- Action Verification Interactive Button -->
+<button class="w-full mt-space-xs py-space-sm px-space-md rounded bg-primary-container text-on-primary-container font-label-caps text-label-caps uppercase flex items-center justify-center gap-space-xs shadow-md active:scale-95 transition-all" id="verifyBtn">
+<span class="material-symbols-outlined text-[18px]" id="verifyIcon">gavel</span>
+<span id="verifyText">VERIFY INTEGRITY AGAINST BLOCKCHAIN</span>
+</button>
+<div class="hidden p-space-xs bg-tertiary-container/20 text-tertiary rounded text-center font-code-sm text-code-sm" id="verifySuccessMsg">
+        ✓ Cryptographic hash matched ledger state at Block #84,209. Zero tampering detected.
+      </div>
+</div>
+</div>
+<!-- Physical Forensic Assets & Ingestion Visual Showcase -->
+<div class="grid grid-cols-2 gap-space-xs">
+<div class="relative h-28 rounded-lg overflow-hidden shadow-md">
+<img class="w-full h-full object-cover" data-alt="Forensic investigator gloved hands plugging a write-blocker hardware device into a seized dark metallic cyber laptop in a high-tech crime laboratory illuminated with cyan and cobalt ambient telemetry HUD lights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2AwJW1Zg5YRBv8Ok7Miw-U_FtnALldu7HzVi9vkZ0FIAwPMXZ-qmcIKUGZmFt1jZ07U9JA-uNDnlB4NHjIr0TdEllgzQ_nURsNuj4u5Q9F11eLXU5DoFu6FxuNe6sgiSrzaZx5g_zfOK_6YHHQ4egDoJjEefGZ40h0NCdLq32xWUClgjjlvXDNzz8XW_JRX8Pc7QEzoJbvCReZBAxfWYBBQ16rJL2gsdjZGuTh-nnlo343TVnouQD"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent flex flex-col justify-end p-space-xs">
+<span class="font-label-caps text-label-caps text-primary truncate">HARDWARE WRITE-BLOCK</span>
+<span class="font-code-sm text-code-sm text-on-surface truncate">Port 04-Locked</span>
+</div>
+</div>
+<div class="relative h-28 rounded-lg overflow-hidden shadow-md">
+<img class="w-full h-full object-cover" data-alt="High tech server room rack holding encrypted blockchain storage vaults with neon green glowing status indicators and cryptographic audit hash streams glowing on military grade server enclosures" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAb2zowftgPw1f3xIVLfcNI4lW6Q7bDhvuJ3J5RZqkWdOdph_aCtWhLAHCUx4GZmQWdM-yMCsIN-o0xHhCg1ud5pa-u-g-Spg5JzjoQWR0zGA09RXnaTV21LbzfwuZSL835gxj1j1XbpEpEDHnnJxXG1iZfX8ovkQbAuTeU1cUUkOV1jICgDk2wTpSI3a_EIPUoWdDKgGjjxjZjp0eTjXHdN0s5VDreE86HH0EDD_ukA3QzRWZEkix0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent flex flex-col justify-end p-space-xs">
+<span class="font-label-caps text-label-caps text-tertiary truncate">HSM KEY ENCLAVE</span>
+<span class="font-code-sm text-code-sm text-on-surface truncate">Cluster-01 Active</span>
+</div>
+</div>
+</div>
+<!-- Evidence Repository Cards List -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between px-space-2xs">
+<span class="font-headline-sm text-headline-sm text-on-surface">Registered Evidence Vault</span>
+<span class="font-label-caps text-label-caps text-primary">4 ASSETS SEALED</span>
+</div>
+<!-- Evidence Card 1024 -->
+<div class="w-full bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-space-xs shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-code-lg text-code-lg text-primary font-bold">EVID-1024</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-on-surface-variant font-label-caps text-label-caps">CDR ARCHIVE</span>
+</div>
+<span class="px-space-xs py-space-2xs rounded bg-tertiary-container/20 text-tertiary font-label-caps text-label-caps flex items-center gap-space-2xs">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+          PASS
+        </span>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm text-on-surface-variant">
+<span>Volume: 12,482 Telemetry Rows</span>
+<span>Source: Node Gateway-9</span>
+</div>
+<div class="bg-surface-container-lowest p-space-xs rounded flex items-center justify-between text-code-sm font-code-sm text-outline">
+<span class="truncate">SHA: a8f47b2c9e10...09c21</span>
+<span class="text-primary-fixed-dim">IMMUTABLE</span>
+</div>
+</div>
+<!-- Evidence Card 1025 -->
+<div class="w-full bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-space-xs shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-code-lg text-code-lg text-primary font-bold">EVID-1025</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-on-surface-variant font-label-caps text-label-caps">FINANCIAL DUMP</span>
+</div>
+<span class="px-space-xs py-space-2xs rounded bg-tertiary-container/20 text-tertiary font-label-caps text-label-caps flex items-center gap-space-2xs">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+          PASS
+        </span>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm text-on-surface-variant">
+<span>Volume: Hawala Ledger (.xlsx)</span>
+<span>Source: FIU Ingestion Pool</span>
+</div>
+<div class="bg-surface-container-lowest p-space-xs rounded flex items-center justify-between text-code-sm font-code-sm text-outline">
+<span class="truncate">SHA: 77f0d2c31e4a...f9931</span>
+<span class="text-primary-fixed-dim">IMMUTABLE</span>
+</div>
+</div>
+<!-- Evidence Card 1026 -->
+<div class="w-full bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-space-xs shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-code-lg text-code-lg text-primary font-bold">EVID-1026</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-on-surface-variant font-label-caps text-label-caps">DISK IMAGE</span>
+</div>
+<span class="px-space-xs py-space-2xs rounded bg-tertiary-container/20 text-tertiary font-label-caps text-label-caps flex items-center gap-space-2xs">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+          PASS
+        </span>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm text-on-surface-variant">
+<span>Volume: 512GB EnCase (.E01)</span>
+<span>Source: Seized Laptop (Target B)</span>
+</div>
+<div class="bg-surface-container-lowest p-space-xs rounded flex items-center justify-between text-code-sm font-code-sm text-outline">
+<span class="truncate">SHA: 3d18ba82c401...1bca9</span>
+<span class="text-primary-fixed-dim">IMMUTABLE</span>
+</div>
+</div>
+<!-- Evidence Card 1027 -->
+<div class="w-full bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-space-xs shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-code-lg text-code-lg text-primary font-bold">EVID-1027</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-on-surface-variant font-label-caps text-label-caps">ANPR VIDEO</span>
+</div>
+<span class="px-space-xs py-space-2xs rounded bg-tertiary-container/20 text-tertiary font-label-caps text-label-caps flex items-center gap-space-2xs">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+          PASS
+        </span>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm text-on-surface-variant">
+<span>Volume: 4K Checkpoint (.mp4)</span>
+<span>Source: Traffic Node 8</span>
+</div>
+<div class="bg-surface-container-lowest p-space-xs rounded flex items-center justify-between text-code-sm font-code-sm text-outline">
+<span class="truncate">SHA: 994c1e089aa4...5d120</span>
+<span class="text-primary-fixed-dim">IMMUTABLE</span>
+</div>
+</div>
+</div>
+<!-- Immutable Audit Trail Logs -->
+<div class="w-full bg-surface-container-low p-space-md rounded-xl shadow-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">receipt_long</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Immutable Access Audit Trail</span>
+</div>
+<span class="font-label-caps text-label-caps text-tertiary">STAMPED</span>
+</div>
+<!-- Filter chips -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-space-2xs">
+<button class="px-space-sm py-space-2xs rounded bg-primary-container text-on-primary-container font-label-caps text-label-caps whitespace-nowrap">
+        ALL EVENTS (48)
+      </button>
+<button class="px-space-sm py-space-2xs rounded bg-surface-container text-on-surface-variant font-label-caps text-label-caps whitespace-nowrap">
+        INVESTIGATOR
+      </button>
+<button class="px-space-sm py-space-2xs rounded bg-surface-container text-on-surface-variant font-label-caps text-label-caps whitespace-nowrap">
+        AI JOBS
+      </button>
+<button class="px-space-sm py-space-2xs rounded bg-surface-container text-on-surface-variant font-label-caps text-label-caps whitespace-nowrap">
+        MAGISTRATE EXPORTS
+      </button>
+</div>
+<!-- Log Items Stack -->
+<div class="flex flex-col gap-space-xs">
+<!-- Log 1 -->
+<div class="p-space-xs rounded bg-surface-container-lowest flex flex-col gap-space-2xs">
+<div class="flex items-center justify-between">
+<span class="font-code-sm text-code-sm text-primary">10:48 AM UTC</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container-high text-tertiary font-label-caps text-label-caps">WATERMARKED &amp; SIGNED</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+          Interim Intelligence Report Generated for Special CBI Magistrate Court.
+        </p>
+<span class="font-code-sm text-code-sm text-outline truncate">Token: E-SIGN#99421-DELHI-MAG</span>
+</div>
+<!-- Log 2 -->
+<div class="p-space-xs rounded bg-surface-container-lowest flex flex-col gap-space-2xs">
+<div class="flex items-center justify-between">
+<span class="font-code-sm text-code-sm text-secondary">10:42 AM UTC</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps">AUTO-LOGGED</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+          AI Graph Analytics Job #9914 executed on Cluster Alpha. Neural Link weights verified.
+        </p>
+<span class="font-code-sm text-code-sm text-outline truncate">Actor: CRIMENET-CORE-DEUR</span>
+</div>
+<!-- Log 3 -->
+<div class="p-space-xs rounded bg-surface-container-lowest flex flex-col gap-space-2xs">
+<div class="flex items-center justify-between">
+<span class="font-code-sm text-code-sm text-tertiary">10:36 AM UTC</span>
+<span class="px-space-xs py-space-2xs rounded bg-tertiary-container/20 text-tertiary font-label-caps text-label-caps">SYSTEM PASS</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+          Evidence EVID-1024 SHA-256 Verified. Non-repudiation witness signed.
+        </p>
+<span class="font-code-sm text-code-sm text-outline truncate">Actor: Arya Sharma (Badge #8402)</span>
+</div>
+<!-- Log 4 -->
+<div class="p-space-xs rounded bg-surface-container-lowest flex flex-col gap-space-2xs">
+<div class="flex items-center justify-between">
+<span class="font-code-sm text-code-sm text-on-surface-variant">10:32 AM UTC</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container-high text-primary font-label-caps text-label-caps">AUTHORIZED</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+          Viewed Subject Dossier: Person A (Alias 'Shadow-1'). Session biometric valid.
+        </p>
+<span class="font-code-sm text-code-sm text-outline truncate">Actor: Arya Sharma (Badge #8402)</span>
+</div>
+</div>
+</div>
+<!-- Court-Ready Generator Section -->
+<div class="w-full rounded-xl bg-gradient-to-br from-surface-container-low to-surface-container-lowest p-space-md shadow-xl flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">description</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-primary">Court Dossier Packager</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Judicial Section 65B Digital Certificate</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+      Compiles all cryptographic evidence records, ledger block headers, digital signatures of the investigating officer, and tamper-detection receipts into a tamper-evident court dossier.
+    </p>
+<!-- Certificate preview badge -->
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col gap-space-2xs">
+<div class="flex items-center justify-between text-code-sm font-code-sm">
+<span class="text-on-surface-variant">OFFICER BADGE: #8402</span>
+<span class="text-tertiary">TOKEN: PKI-RSA-4096-LIVE</span>
+</div>
+<div class="flex items-center justify-between text-code-sm font-code-sm">
+<span class="text-on-surface-variant">JURISDICTION: DELHI HC / SPECIAL</span>
+<span class="text-primary font-bold">NON-REPUDIATION: ENABLED</span>
+</div>
+</div>
+<button class="w-full py-space-sm px-space-md rounded bg-secondary-container text-on-secondary-container font-label-caps text-label-caps uppercase flex items-center justify-center gap-space-xs shadow-lg active:scale-95 transition-all" id="courtPackagerBtn">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+<span>GENERATE COURT EVIDENCE SUMMARY &amp; HASH CERTIFICATE</span>
+</button>
+<div class="hidden p-space-xs bg-tertiary-container/15 text-tertiary rounded text-center font-code-sm text-code-sm" id="courtStatus">
+      ✓ Cryptographic Certificate PDF generated with embedded X.509 signature and tamper seal.
+    </div>
+</div>
+<script>
+    (function() {
+      // Interactive Verify Button
+      const verifyBtn = document.getElementById('verifyBtn');
+      const verifyText = document.getElementById('verifyText');
+      const verifyIcon = document.getElementById('verifyIcon');
+      const verifySuccessMsg = document.getElementById('verifySuccessMsg');
+
+      if (verifyBtn) {
+        verifyBtn.addEventListener('click', function() {
+          verifyText.textContent = 'CHECKING MERKLE PROOFS...';
+          verifyIcon.textContent = 'hourglass_top';
+          verifyBtn.classList.add('opacity-75');
+
+          setTimeout(() => {
+            verifyText.textContent = 'RE-VERIFIED (ZERO TAMPERING)';
+            verifyIcon.textContent = 'check_circle';
+            verifyBtn.classList.remove('opacity-75');
+            verifySuccessMsg.classList.remove('hidden');
+          }, 700);
+        });
+      }
+
+      // Copy Hash Button
+      const copyHashBtn = document.getElementById('copyHashBtn');
+      const hashValue = document.getElementById('hashValue');
+      if (copyHashBtn && hashValue) {
+        copyHashBtn.addEventListener('click', function() {
+          navigator.clipboard.writeText(hashValue.innerText.trim()).then(() => {
+            const originalText = copyHashBtn.innerHTML;
+            copyHashBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">done</span><span class="font-label-caps text-label-caps">COPIED</span>';
+            setTimeout(() => {
+              copyHashBtn.innerHTML = originalText;
+            }, 1800);
+          }).catch(() => {});
+        });
+      }
+
+      // Court Packager Button
+      const courtPackagerBtn = document.getElementById('courtPackagerBtn');
+      const courtStatus = document.getElementById('courtStatus');
+      if (courtPackagerBtn && courtStatus) {
+        courtPackagerBtn.addEventListener('click', function() {
+          courtPackagerBtn.classList.add('opacity-60');
+          setTimeout(() => {
+            courtPackagerBtn.classList.remove('opacity-60');
+            courtStatus.classList.remove('hidden');
+          }, 600);
+        });
+      }
+    })();
+  </script>
+</div></main><div class="fixed bottom-24 right-4 z-40"><button aria-label="Global Intelligence Search" class="h-12 px-space-md rounded-full bg-surface-container-high/90 backdrop-blur-md text-primary-container flex items-center gap-space-xs shadow-[0_0_20px_rgba(0,240,255,0.25)] hover:bg-surface-container-highest transition-all"><span class="material-symbols-outlined text-[20px] text-primary-container">radar</span><span class="font-label-caps text-label-caps uppercase tracking-wider font-bold text-primary">AI QUERY</span></button></div><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_-1px_16px_rgba(0,0,0,0.5)]" data-active-classes="text-primary-container font-semibold drop-shadow-[0_0_8px_rgba(0,240,255,0.4)]"><div class="flex justify-around items-center h-16 px-space-xs"><a class="flex flex-col items-center justify-center gap-space-2xs min-w-[56px] min-h-[44px] text-on-surface-variant transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">space_dashboard</span><span class="font-label-caps text-label-caps uppercase">HUD</span></a><a class="flex flex-col items-center justify-center gap-space-2xs min-w-[56px] min-h-[44px] text-on-surface-variant transition-colors" data-path="knowledge-graph" href="#"><span class="material-symbols-outlined text-[22px]">hub</span><span class="font-label-caps text-label-caps uppercase">Graph</span></a><a class="flex flex-col items-center justify-center gap-space-2xs min-w-[56px] min-h-[44px] text-on-surface-variant transition-colors" data-path="investigations" href="#"><span class="material-symbols-outlined text-[22px]">folder_managed</span><span class="font-label-caps text-label-caps uppercase">Cases</span></a><a class="flex flex-col items-center justify-center gap-space-2xs min-w-[56px] min-h-[44px] text-on-surface-variant transition-colors" data-path="anomaly-alerts" href="#"><span class="material-symbols-outlined text-[22px]">crisis_alert</span><span class="font-label-caps text-label-caps uppercase">Alerts</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-space-2xs min-w-[56px] min-h-[44px] transition-colors text-primary-container font-semibold drop-shadow-[0_0_8px_rgba(0,240,255,0.4)]" data-path="security-ledger" href="#"><span class="material-symbols-outlined text-[22px]">verified_user</span><span class="font-label-caps text-label-caps uppercase">Audit</span></a></div></nav></body></html>

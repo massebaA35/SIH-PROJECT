@@ -1,0 +1,33 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      NETRA_ENV: development
+      JWT_SECRET: replace-with-a-development-secret
+    volumes:
+      - ./backend:/app
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: netra
+      POSTGRES_USER: netra
+      POSTGRES_PASSWORD: netra
+    ports:
+      - "5432:5432"
+    profiles: [full]
+  neo4j:
+    image: neo4j:5-community
+    environment:
+      NEO4J_AUTH: neo4j/change-me
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    profiles: [full]
