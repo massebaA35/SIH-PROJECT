@@ -47,3 +47,34 @@ def test_entity_resolution_never_auto_merges(client, auth_headers):
     for candidate in body["candidates"]:
         assert "recommendation" in candidate
         assert "verification" in candidate["recommendation"].lower()
+
+
+def test_entity_resolution_candidates_expose_indicator_breakdown(client, auth_headers):
+    response = client.get("/api/entities/resolution/duplicates", headers=auth_headers)
+    body = response.json()
+    assert body["candidates"], "expected at least one duplicate candidate from the synthetic dataset"
+    for candidate in body["candidates"]:
+        indicators = candidate["indicators"]
+        for key in ("name_similarity", "phone_overlap", "location_overlap", "organization_overlap"):
+            assert 0 <= indicators[key] <= 1
+
+
+def test_entity_resolution_decision_is_recorded_in_audit_log(client, auth_headers):
+    candidates = client.get("/api/entities/resolution/duplicates", headers=auth_headers).json()["candidates"]
+    pair = candidates[0]
+    response = client.post("/api/entities/resolution/decision", headers=auth_headers, json={
+        "entity_a": pair["entity_a"]["id"], "entity_b": pair["entity_b"]["id"], "decision": "DISMISSED",
+    })
+    assert response.status_code == 200
+    assert response.json()["decision"] == "DISMISSED"
+
+    audit_response = client.get("/api/audit/logs", headers=auth_headers, params={"limit": 5})
+    events = audit_response.json()["items"]
+    assert any(e["event_type"] == "ENTITY_RESOLUTION_DECISION" for e in events)
+
+
+def test_entity_resolution_decision_rejects_invalid_value(client, auth_headers):
+    response = client.post("/api/entities/resolution/decision", headers=auth_headers, json={
+        "entity_a": "PERSON-101", "entity_b": "PERSON-102", "decision": "MERGED",
+    })
+    assert response.status_code == 422

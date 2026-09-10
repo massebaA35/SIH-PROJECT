@@ -34,3 +34,13 @@ class AssistantQueryRequest(BaseModel):
 
 class EntityResolutionRequest(BaseModel):
     entity_type: str = Field(pattern="^(PERSON|ORGANIZATION|VEHICLE|PHONE|LOCATION|ACCOUNT)$")
+
+
+class PathRequest(BaseModel):
+    entity_a: str = Field(max_length=20)
+    entity_b: str = Field(max_length=20)
+
+
+class CrossCaseCompareRequest(BaseModel):
+    case_id_a: str = Field(max_length=20)
+    case_id_b: str = Field(max_length=20)

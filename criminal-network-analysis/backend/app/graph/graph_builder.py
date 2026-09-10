@@ -43,6 +43,31 @@ def build_case_graph(db: Session, case_id: str) -> nx.MultiGraph:
     return graph
 
 
+def build_full_graph(db: Session) -> nx.MultiGraph:
+    """Build the graph across every case. Hidden-link discovery is explicitly
+    about connections that cross case boundaries, so path-finding must not be
+    scoped to a single case_id the way build_case_graph is."""
+    graph = nx.MultiGraph()
+    edges = db.query(Relationship).all()
+
+    for edge in edges:
+        for node_id, node_type in ((edge.source_id, edge.source_type), (edge.target_id, edge.target_type)):
+            if not graph.has_node(node_id):
+                graph.add_node(node_id, type=node_type, label=_display_name(db, node_id, node_type))
+        graph.add_edge(
+            edge.source_id, edge.target_id,
+            key=edge.id,
+            relation_type=edge.relation_type,
+            date=edge.occurred_on.isoformat(),
+            frequency=edge.frequency,
+            source=edge.source,
+            confidence=edge.confidence,
+            evidence=edge.evidence,
+            case_id=edge.case_id,
+        )
+    return graph
+
+
 def build_entity_neighborhood_graph(db: Session, entity_id: str, depth: int = 1) -> nx.MultiGraph:
     """BFS outward from a single entity up to `depth` hops."""
     graph = nx.MultiGraph()

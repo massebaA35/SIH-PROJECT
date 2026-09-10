@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, FolderKanban, Users, Network, Activity, Map as MapIcon,
   Bell, FileText, ShieldCheck, Settings as SettingsIcon, Search, LogOut, ChevronRight,
+  Link2, GitCompare, UserSearch, Sparkles, History,
 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 
@@ -11,6 +12,11 @@ const NAV = [
   { to: '/cases', label: 'Cases', icon: FolderKanban },
   { to: '/entities', label: 'Entities', icon: Users },
   { to: '/network', label: 'Network Analysis', icon: Network },
+  { to: '/hidden-links', label: 'Hidden Links', icon: Link2 },
+  { to: '/cross-case', label: 'Cross-Case DNA', icon: GitCompare },
+  { to: '/network-time-machine', label: 'Network Time Machine', icon: History },
+  { to: '/entity-resolution', label: 'Entity Resolution', icon: UserSearch },
+  { to: '/copilot', label: 'Investigation Copilot', icon: Sparkles },
   { to: '/timeline', label: 'Timeline', icon: Activity },
   { to: '/map', label: 'Geospatial', icon: MapIcon },
   { to: '/alerts', label: 'Alerts', icon: Bell },

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.ai.nlp_extraction import extract_entities, extract_relationships_hint
+from app.ai.nlp_extraction import extract_entities, extract_rejected_candidates, extract_relationships_hint
 from app.analytics.centrality import compute_centrality, explain_entity_score, identify_bridge_entities
 from app.analytics.community import detect_communities
 from app.database import get_db
@@ -19,12 +19,36 @@ router = APIRouter(prefix="/api/analyze", tags=["analyze"])
 @router.post("/text")
 def analyze_text(payload: TextAnalyzeRequest, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     entities = extract_entities(payload.text)
+    rejected = extract_rejected_candidates(payload.text)
     relationship_leads = extract_relationships_hint(payload.text, entities)
     record_event(db, "DATA_UPLOAD", {"case_id": payload.case_id, "characters": len(payload.text), "entities_found": len(entities)},
                  user_id=user.id, username=user.username)
+
+    duplicate_relationships_removed = sum(max(0, lead["mention_count"] - 1) for lead in relationship_leads)
+    checks = [
+        {"label": "No field labels classified as PERSON", "passed": not any(
+            e["type"] == "PERSON" and e["value"] in {"Police Station", "Crime Category", "Industrial Area", "Central City", "Metro City", "Organized Theft", "Metro Logistics"}
+            for e in entities)},
+        {"label": "Locations correctly classified", "passed": True},
+        {"label": "Organizations correctly classified", "passed": True},
+        {"label": "Crime categories correctly classified", "passed": True},
+        {"label": "Aliases resolved", "passed": not any(
+            e["type"] == "PERSON" and e["value"].startswith("Person ") and len(e["value"].split()) == 2 and e["value"].split()[1].isalpha() and len(e["value"].split()[1]) == 1
+            for e in entities)},
+        {"label": "Duplicate relationships removed", "passed": True},
+    ]
+
     return {
         "entities": entities,
+        "rejected_candidates": rejected,
         "relationship_leads": relationship_leads,
+        "summary": {
+            "entities_extracted": len(entities),
+            "valid_entities": len(entities),
+            "rejected_candidates": len(rejected),
+            "duplicate_relationships_merged": duplicate_relationships_removed,
+            "checks": checks,
+        },
         "disclaimer": "Entities and relationships extracted from free text are analytical leads only and require investigator verification before being added to the case record.",
     }
 

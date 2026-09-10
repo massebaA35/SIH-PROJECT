@@ -1,5 +1,6 @@
 import networkx as nx
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -9,10 +10,18 @@ from app.ai.entity_resolution import find_possible_duplicate_persons
 from app.graph.graph_builder import build_case_graph, build_entity_neighborhood_graph
 from app.models.relationship import Relationship
 from app.models.user import User
+from app.security.audit_chain import record_event
 from app.security.rbac import get_current_user
 from app.services.entity_service import get_entity_detail, list_entities
 
 router = APIRouter(prefix="/api/entities", tags=["entities"])
+
+
+class ResolutionDecisionRequest(BaseModel):
+    entity_a: str = Field(max_length=20)
+    entity_b: str = Field(max_length=20)
+    decision: str = Field(pattern="^(CONFIRMED|DISMISSED)$")
+    note: str = Field(default="", max_length=1000)
 
 
 @router.get("")
@@ -31,6 +40,20 @@ def entities(
 def entity_resolution_candidates(db: Session = Depends(get_db), _user: User = Depends(get_current_user)):
     """Possible duplicate PERSON records. Never auto-merged -- see brief section 11."""
     return {"candidates": find_possible_duplicate_persons(db)}
+
+
+@router.post("/resolution/decision")
+def record_resolution_decision(payload: ResolutionDecisionRequest, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    """Record an investigator's Confirm Match / Keep Separate decision on a
+    potential-duplicate pair. This never merges records automatically --
+    it only logs the human decision to the tamper-evident audit trail so
+    there's a durable record of who reviewed which candidate and when."""
+    record_event(
+        db, "ENTITY_RESOLUTION_DECISION",
+        {"entity_a": payload.entity_a, "entity_b": payload.entity_b, "decision": payload.decision, "note": payload.note},
+        user_id=user.id, username=user.username,
+    )
+    return {"status": "recorded", "entity_a": payload.entity_a, "entity_b": payload.entity_b, "decision": payload.decision}
 
 
 @router.get("/{entity_id}")

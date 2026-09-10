@@ -1,10 +1,21 @@
 """Shared pytest fixtures: an isolated in-memory SQLite database seeded with
 the same synthetic dataset generator used for local development, and a
 FastAPI TestClient wired to that database instead of the real dev DB file."""
+import os
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+# The app's in-memory rate limiter keys its sliding window on client IP, and
+# Starlette's TestClient always reports the same host ("testclient") for
+# every request in the whole pytest process. That means every test in the
+# suite shares one bucket against app.config.Settings.rate_limit_per_minute
+# (120 by default) -- as the suite grows, later tests start failing with a
+# real 429 response instead of their expected payload, entirely unrelated to
+# what they're testing. This must be set before app.config is first imported
+# (get_settings() is lru_cached), so it happens before any `from app...` import.
+os.environ.setdefault("RATE_LIMIT_PER_MINUTE", "1000000")
 
 import pytest
 from sqlalchemy import create_engine

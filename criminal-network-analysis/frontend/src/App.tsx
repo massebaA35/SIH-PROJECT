@@ -9,6 +9,11 @@ import CaseDetail from './pages/CaseDetail'
 import Entities from './pages/Entities'
 import EntityDetail from './pages/EntityDetail'
 import NetworkAnalysis from './pages/NetworkAnalysis'
+import HiddenLinks from './pages/HiddenLinks'
+import CrossCaseDna from './pages/CrossCaseDna'
+import EntityResolution from './pages/EntityResolution'
+import Copilot from './pages/Copilot'
+import NetworkTimeMachine from './pages/NetworkTimeMachine'
 import Timeline from './pages/Timeline'
 import MapView from './pages/MapView'
 import Alerts from './pages/Alerts'
@@ -35,6 +40,11 @@ export default function App() {
           <Route path="/entities" element={<Entities />} />
           <Route path="/entities/:entityId" element={<EntityDetail />} />
           <Route path="/network" element={<NetworkAnalysis />} />
+          <Route path="/hidden-links" element={<HiddenLinks />} />
+          <Route path="/cross-case" element={<CrossCaseDna />} />
+          <Route path="/entity-resolution" element={<EntityResolution />} />
+          <Route path="/copilot" element={<Copilot />} />
+          <Route path="/network-time-machine" element={<NetworkTimeMachine />} />
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/map" element={<MapView />} />
           <Route path="/alerts" element={<Alerts />} />

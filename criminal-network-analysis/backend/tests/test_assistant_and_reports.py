@@ -4,7 +4,7 @@ def test_assistant_answers_case_entities_question(client, auth_headers):
     assert response.status_code == 200
     body = response.json()
     assert case_id in body["answer"]
-    assert "Requires investigator verification" in body["disclaimer"]
+    assert "Requires Investigator Verification" in body["disclaimer"]
 
 
 def test_assistant_no_data_response_for_unknown_case(client, auth_headers):
