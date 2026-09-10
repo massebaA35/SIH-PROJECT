@@ -1,0 +1,58 @@
+# Local Docker setup for the prototype. Uses SQLite inside the backend container by
+# default (a named volume persists crime_network.db across restarts) so it works with
+# zero extra configuration; the commented-out `database` service below shows how to
+# switch to PostgreSQL for a production-style deployment (see docs/DATABASE.md).
+#
+# Usage:
+#   docker compose up --build
+#   Frontend: http://localhost:5180   Backend: http://localhost:8010/docs
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8010:8010"
+    environment:
+      DATABASE_URL: sqlite:////data/crime_network.db
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-this-to-a-long-random-string-before-any-real-deployment}
+      CORS_ORIGINS: http://localhost:5180,http://127.0.0.1:5180
+      ENVIRONMENT: docker
+    volumes:
+      - backend_data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8010/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:8010/api
+    ports:
+      - "5180:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # --- Optional: PostgreSQL instead of the default SQLite ---
+  # Uncomment this service and change `backend.environment.DATABASE_URL` above to
+  # postgresql+psycopg2://ncrb:ncrb@database:5432/criminal_network
+  # (also add `psycopg2-binary` to backend/requirements.txt first).
+  #
+  # database:
+  #   image: postgres:16-alpine
+  #   environment:
+  #     POSTGRES_USER: ncrb
+  #     POSTGRES_PASSWORD: ncrb
+  #     POSTGRES_DB: criminal_network
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  backend_data:
+  # postgres_data:

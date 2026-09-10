@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background-color: #0a0f1a;
+  background-image:
+    linear-gradient(rgba(34, 48, 74, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 48, 74, 0.35) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #22304a; border-radius: 4px; }
+
+.leaflet-container { background: #0d1420; }
+
+@layer components {
+  .panel {
+    @apply bg-panel border border-line rounded-lg;
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-md border border-line px-3 py-2 text-xs font-medium text-slate-200 hover:bg-white/5 transition-colors;
+  }
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-md bg-accent px-3 py-2 text-xs font-bold text-[#04211d] hover:brightness-110 transition;
+  }
+  .input {
+    @apply bg-panel2 border border-line rounded-md px-3 py-2 text-xs text-slate-100 outline-none focus:border-accent/60;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-mono uppercase tracking-wide;
+  }
+}
