@@ -2,10 +2,20 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Search, ChevronLeft, ChevronRight, ChevronRight as Arrow, FileText, Sparkles,
-  AlertCircle, CheckCircle, RefreshCcw, Layers, Upload, XCircle, Eye, EyeOff,
+  AlertCircle, CheckCircle, RefreshCcw, Layers, Upload, XCircle, Eye, EyeOff, Network, Loader2,
+  FileType, Copy, Fingerprint, FolderSearch, PenSquare,
 } from 'lucide-react'
 import { api } from '../services/api'
 import Disclaimer from '../components/ui/Disclaimer'
+import type { Case } from '../types'
+
+const UPLOAD_MAX_SIZE = 2 * 1024 * 1024
+const UPLOAD_EXTENSIONS = ['.txt', '.pdf', '.docx']
+
+function fileTypeLabel(filename: string): string {
+  const ext = filename.toLowerCase().split('.').pop() || ''
+  return { txt: 'Text', pdf: 'PDF', docx: 'Word' }[ext] || ext.toUpperCase()
+}
 
 const EXTRACTION_TYPE_FILTERS = ['ALL', 'PERSON', 'ORGANIZATION', 'LOCATION', 'VEHICLE', 'PHONE', 'CASE', 'DATE', 'CRIME_CATEGORY']
 
@@ -34,15 +44,26 @@ export default function Entities() {
   const [loading, setLoading] = useState(true)
 
   // Extraction state
+  const [intakeMode, setIntakeMode] = useState<'paste' | 'upload'>('paste')
   const [rawText, setRawText] = useState('')
   const [extracting, setExtracting] = useState(false)
   const [extractionResult, setExtractionResult] = useState<any>(null)
-  const [uploadedFileName, setUploadedFileName] = useState('')
-  const [uploadError, setUploadError] = useState('')
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const MAX_UPLOAD_SIZE = 2 * 1024 * 1024
   const [extractionTypeFilter, setExtractionTypeFilter] = useState('ALL')
   const [showRejected, setShowRejected] = useState(false)
+  const [cases, setCases] = useState<Case[]>([])
+  const [commitCaseId, setCommitCaseId] = useState('')
+  const [committing, setCommitting] = useState(false)
+  const [commitResult, setCommitResult] = useState<any>(null)
+  const [commitError, setCommitError] = useState('')
+
+  // Document upload (evidence intake) state
+  const uploadInputRef = useRef<HTMLInputElement>(null)
+  const [uploadCaseId, setUploadCaseId] = useState('')
+  const [pendingFile, setPendingFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadIssue, setUploadIssue] = useState<{ kind: 'error' | 'duplicate' | 'unreadable'; message: string; caseId?: string } | null>(null)
+  const [evidenceInfo, setEvidenceInfo] = useState<{ evidenceId: string; hash: string; filename: string; caseId: string } | null>(null)
+  const [hashCopied, setHashCopied] = useState(false)
 
   useEffect(() => {
     if (activeTab !== 'directory') return
@@ -59,38 +80,114 @@ export default function Entities() {
     return () => clearTimeout(handle)
   }, [type, q, page, activeTab])
 
-  const handleFirFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (activeTab === 'extraction' && cases.length === 0) {
+      api.get('/cases', { params: { page_size: 100 } }).then((r) => setCases(r.data.items))
+    }
+  }, [activeTab])
+
+  const resetUploadResult = () => {
+    setUploadIssue(null)
+    setEvidenceInfo(null)
+    setExtractionResult(null)
+    setCommitResult(null)
+    setCommitError('')
+  }
+
+  const handleEvidenceFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
-    setUploadError('')
-    const looksLikeText = file.name.toLowerCase().endsWith('.txt') || file.type === 'text/plain'
-    if (!looksLikeText) {
-      setUploadError('Only plain text (.txt) files are supported for FIR upload.')
+    resetUploadResult()
+    const ext = '.' + file.name.toLowerCase().split('.').pop()
+    if (!UPLOAD_EXTENSIONS.includes(ext)) {
+      setUploadIssue({ kind: 'error', message: `"${file.name}" isn't a supported file type. Upload a .txt, .pdf, or .docx document.` })
+      setPendingFile(null)
       return
     }
-    if (file.size > MAX_UPLOAD_SIZE) {
-      setUploadError('File is too large. Maximum size is 2 MB for text FIR uploads.')
+    if (file.size > UPLOAD_MAX_SIZE) {
+      setUploadIssue({ kind: 'error', message: `"${file.name}" is too large. Maximum size is 2 MB.` })
+      setPendingFile(null)
       return
     }
-    const reader = new FileReader()
-    reader.onload = () => {
-      setRawText(String(reader.result || ''))
-      setUploadedFileName(file.name)
-      setExtractionResult(null)
+    setPendingFile(file)
+  }
+
+  const handleEvidenceUpload = async () => {
+    if (!uploadCaseId || !pendingFile || uploading) return
+    setUploading(true)
+    resetUploadResult()
+    const form = new FormData()
+    form.append('case_id', uploadCaseId)
+    form.append('file', pendingFile)
+    try {
+      const res = await api.post('/evidence/upload', form)
+      setExtractionResult(res.data)
+      setEvidenceInfo({
+        evidenceId: res.data.evidence_id,
+        hash: res.data.sha256_hash,
+        filename: pendingFile.name,
+        caseId: uploadCaseId,
+      })
+      setCommitCaseId(uploadCaseId)
+    } catch (err: any) {
+      const status = err.response?.status
+      const detail = err.response?.data?.detail
+      if (status === 409) {
+        setUploadIssue({
+          kind: 'duplicate',
+          message: `This exact document is already recorded as evidence in this case set.`,
+          caseId: typeof detail === 'object' ? detail.case_id : undefined,
+        })
+      } else if (status === 422) {
+        setUploadIssue({
+          kind: 'unreadable',
+          message: 'No extractable text was found in this file. Scanned or image-only documents aren’t supported yet — try pasting the text instead.',
+        })
+      } else {
+        setUploadIssue({ kind: 'error', message: (typeof detail === 'string' && detail) || 'Could not upload this document. Check the file and try again.' })
+      }
+    } finally {
+      setUploading(false)
     }
-    reader.onerror = () => setUploadError('Could not read the selected file.')
-    reader.readAsText(file)
+  }
+
+  const copyHash = () => {
+    if (!evidenceInfo) return
+    navigator.clipboard.writeText(evidenceInfo.hash).then(() => {
+      setHashCopied(true)
+      setTimeout(() => setHashCopied(false), 1500)
+    })
   }
 
   const handleExtract = async () => {
     if (!rawText.trim() || extracting) return
     setExtracting(true)
+    setCommitResult(null)
+    setCommitError('')
     try {
       const res = await api.post('/analyze/text', { text: rawText })
       setExtractionResult(res.data)
     } finally {
       setExtracting(false)
+    }
+  }
+
+  const handleCommit = async () => {
+    if (!commitCaseId || !extractionResult || committing) return
+    setCommitting(true)
+    setCommitError('')
+    try {
+      const res = await api.post('/analyze/commit', {
+        case_id: commitCaseId,
+        entities: extractionResult.entities,
+        relationship_leads: extractionResult.relationship_leads,
+      })
+      setCommitResult(res.data)
+    } catch (err: any) {
+      setCommitError(err.response?.data?.detail || 'Could not add this extraction to the case network. Only Administrators and Investigators can confirm entities into a case.')
+    } finally {
+      setCommitting(false)
     }
   }
 
@@ -184,61 +281,203 @@ export default function Entities() {
 
       {activeTab === 'extraction' && (
         <div className="space-y-4">
-          <div className="panel p-5">
-            <div className="mb-2 flex items-center justify-between">
-              <div>
-                <h2 className="text-sm font-semibold">Unstructured Intelligence / Text Ingestion</h2>
-                <p className="text-xs text-muted">
-                  Extracts persons, organizations, locations, vehicles, phones, accounts, cases, and events using offline explainable NLP.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".txt,text/plain"
-                  onChange={handleFirFileUpload}
-                  className="hidden"
-                />
-                <button type="button" onClick={() => fileInputRef.current?.click()} className="btn text-xs text-accent">
-                  <Upload size={13} /> Upload FIR (.txt)
-                </button>
+          <div className="inline-flex rounded-md border border-line bg-panel2 p-0.5">
+            <button
+              onClick={() => { setIntakeMode('paste'); resetUploadResult(); setCommitCaseId('') }}
+              className={`flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition ${
+                intakeMode === 'paste' ? 'bg-accent text-[#04211d]' : 'text-muted hover:text-slate-200'
+              }`}
+            >
+              <PenSquare size={12} /> Paste text
+            </button>
+            <button
+              onClick={() => { setIntakeMode('upload'); setExtractionResult(null); setCommitResult(null); setCommitError('') }}
+              className={`flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition ${
+                intakeMode === 'upload' ? 'bg-accent text-[#04211d]' : 'text-muted hover:text-slate-200'
+              }`}
+            >
+              <FolderSearch size={12} /> Upload document
+            </button>
+          </div>
+
+          {intakeMode === 'paste' && (
+            <div className="panel p-5">
+              <div className="mb-2 flex items-center justify-between">
+                <div>
+                  <h2 className="text-sm font-semibold">Unstructured Intelligence / Text Ingestion</h2>
+                  <p className="text-xs text-muted">
+                    Extracts persons, organizations, locations, vehicles, phones, accounts, cases, and events using offline explainable NLP.
+                  </p>
+                </div>
                 <button type="button" onClick={() => setRawText(SAMPLE_TEXT)} className="btn text-xs text-accent">
                   <FileText size={13} /> Load Sample Dispatch Text
                 </button>
               </div>
+
+              <textarea
+                value={rawText}
+                onChange={(e) => setRawText(e.target.value)}
+                placeholder="Paste interrogation record, witness statement, police report, or FIR text here..."
+                rows={5}
+                className="mt-2 w-full rounded-md border border-line bg-panel2 p-3 text-xs text-slate-100 outline-none focus:border-accent"
+              />
+
+              <div className="mt-3 flex items-center justify-between">
+                <button onClick={handleExtract} disabled={extracting || !rawText.trim()} className="btn-primary">
+                  {extracting ? <RefreshCcw size={13} className="animate-spin" /> : <Sparkles size={13} />}
+                  Extract Structured Entities
+                </button>
+                <span className="text-[11px] text-muted">{rawText.length} characters</span>
+              </div>
             </div>
+          )}
 
-            {uploadedFileName && !uploadError && (
-              <p className="mt-2 flex items-center gap-1.5 text-[11px] text-accent">
-                <CheckCircle size={12} /> Loaded "{uploadedFileName}" into the text box below. Review it before extracting.
-              </p>
-            )}
-            {uploadError && (
-              <p className="mt-2 flex items-center gap-1.5 text-[11px] text-danger">
-                <AlertCircle size={12} /> {uploadError}
-              </p>
-            )}
+          {intakeMode === 'upload' && (
+            <div className="panel p-5">
+              <div className="mb-3">
+                <h2 className="text-sm font-semibold">Evidence Intake</h2>
+                <p className="text-xs text-muted">
+                  Upload a document (.txt, .pdf, .docx) as case evidence. It's hashed for chain of custody, checked against
+                  previously recorded evidence, then run through the same offline extraction engine as pasted text.
+                </p>
+              </div>
 
-            <textarea
-              value={rawText}
-              onChange={(e) => { setRawText(e.target.value); setUploadedFileName('') }}
-              placeholder="Paste interrogation record, witness statement, police report, or FIR text here, or upload a .txt file above..."
-              rows={5}
-              className="mt-2 w-full rounded-md border border-line bg-panel2 p-3 text-xs text-slate-100 outline-none focus:border-accent"
-            />
+              <div className="flex flex-wrap items-end gap-3">
+                <label className="flex flex-col gap-1">
+                  <span className="text-[10px] uppercase tracking-widest text-muted">Case</span>
+                  <select
+                    className="input w-56"
+                    value={uploadCaseId}
+                    onChange={(e) => { setUploadCaseId(e.target.value); resetUploadResult(); setPendingFile(null) }}
+                  >
+                    <option value="">Select a case</option>
+                    {cases.map((c) => <option key={c.id} value={c.id}>{c.id} · {c.title}</option>)}
+                  </select>
+                </label>
 
-            <div className="mt-3 flex items-center justify-between">
-              <button onClick={handleExtract} disabled={extracting || !rawText.trim()} className="btn-primary">
-                {extracting ? <RefreshCcw size={13} className="animate-spin" /> : <Sparkles size={13} />}
-                Extract Structured Entities
-              </button>
-              <span className="text-[11px] text-muted">{rawText.length} characters</span>
+                <input
+                  ref={uploadInputRef}
+                  type="file"
+                  accept=".txt,.pdf,.docx"
+                  onChange={handleEvidenceFileSelect}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => uploadInputRef.current?.click()}
+                  disabled={!uploadCaseId}
+                  className="btn text-xs text-accent disabled:cursor-not-allowed disabled:opacity-40"
+                  title={!uploadCaseId ? 'Select a case first' : undefined}
+                >
+                  <Upload size={13} /> Select file
+                </button>
+
+                {pendingFile && (
+                  <span className="flex items-center gap-1.5 rounded-md border border-line bg-panel2 px-2.5 py-1.5 text-[11px] text-slate-200">
+                    <FileType size={12} className="text-muted" /> {pendingFile.name}
+                    <span className="text-muted">· {fileTypeLabel(pendingFile.name)}</span>
+                  </span>
+                )}
+
+                <button
+                  onClick={handleEvidenceUpload}
+                  disabled={!uploadCaseId || !pendingFile || uploading}
+                  className="btn-primary"
+                >
+                  {uploading ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
+                  {uploading ? 'Hashing & extracting…' : 'Upload & extract'}
+                </button>
+              </div>
+
+              {uploadIssue && (
+                <div
+                  className={`mt-3 flex items-start gap-2 rounded-md border p-3 text-[11px] ${
+                    uploadIssue.kind === 'error'
+                      ? 'border-danger/30 bg-danger/10 text-danger'
+                      : 'border-accent2/30 bg-accent2/10 text-accent2'
+                  }`}
+                >
+                  <AlertCircle size={13} className="mt-0.5 shrink-0" />
+                  <span>{uploadIssue.message}</span>
+                </div>
+              )}
+
+              {evidenceInfo && (
+                <div className="mt-4 rounded-md border border-accent/30 bg-panel2 p-3">
+                  <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold text-accent">
+                    <CheckCircle size={13} /> Evidence recorded
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11px] sm:grid-cols-4">
+                    <div>
+                      <div className="text-[10px] uppercase text-muted">Evidence ID</div>
+                      <div className="font-mono text-slate-200">{evidenceInfo.evidenceId}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase text-muted">Case</div>
+                      <div className="text-slate-200">{evidenceInfo.caseId}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase text-muted">File</div>
+                      <div className="truncate text-slate-200">{evidenceInfo.filename}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase text-muted">SHA-256 (chain of custody)</div>
+                      <button onClick={copyHash} className="flex items-center gap-1 font-mono text-slate-200 hover:text-accent" title="Copy full hash">
+                        <Fingerprint size={11} className="shrink-0 text-muted" />
+                        {evidenceInfo.hash.slice(0, 12)}…
+                        <Copy size={11} className="shrink-0" />
+                        {hashCopied && <span className="text-accent">copied</span>}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          )}
 
           {extractionResult && (
             <div className="space-y-4">
+              <div className="panel p-4">
+                <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-slate-200">
+                  <Network size={14} className="text-accent" /> Add to case network
+                </div>
+                <p className="mb-3 text-[11px] text-muted">
+                  Extraction alone never changes any case record. Review the entities and relationships above, then
+                  {evidenceInfo ? ' confirm them into this evidence’s case network' : ' pick a case to confirm them into its network graph'},
+                  this is the step that makes them appear in Network Analysis.
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  {evidenceInfo ? (
+                    <span className="input flex items-center gap-1.5 text-slate-200">
+                      <FolderSearch size={12} className="text-muted" /> {evidenceInfo.caseId}
+                    </span>
+                  ) : (
+                    <select className="input" value={commitCaseId} onChange={(e) => { setCommitCaseId(e.target.value); setCommitResult(null); setCommitError('') }}>
+                      <option value="">Select a case</option>
+                      {cases.map((c) => <option key={c.id} value={c.id}>{c.id} · {c.title}</option>)}
+                    </select>
+                  )}
+                  <button className="btn-primary" disabled={!commitCaseId || committing} onClick={handleCommit}>
+                    {committing ? <Loader2 size={13} className="animate-spin" /> : <Network size={13} />}
+                    Confirm & add to case network
+                  </button>
+                  {commitResult && (
+                    <button className="btn text-xs" onClick={() => navigate(`/cases/${commitResult.case_id}`)}>
+                      View case network <ChevronRight size={13} />
+                    </button>
+                  )}
+                </div>
+                {commitError && <p className="mt-3 text-xs text-danger">{commitError}</p>}
+                {commitResult && (
+                  <div className="mt-3 rounded-md border border-accent/30 bg-accent/10 p-3 text-[11px] text-accent">
+                    Added to {commitResult.case_id}: {commitResult.entities_created} new entit{commitResult.entities_created === 1 ? 'y' : 'ies'} created,{' '}
+                    {commitResult.entities_matched} matched to existing records, {commitResult.relationships_created} relationship(s) added
+                    {commitResult.relationships_skipped > 0 ? ` (${commitResult.relationships_skipped} skipped, endpoints not resolved)` : ''}.
+                    {commitResult.skipped_entity_types?.length > 0 && ` Not persisted as graph nodes: ${commitResult.skipped_entity_types.join(', ')}.`}
+                  </div>
+                )}
+              </div>
+
               {extractionResult.summary && (
                 <div className="panel p-4">
                   <h3 className="mb-3 text-xs font-semibold text-slate-100">Extraction validation summary</h3>
