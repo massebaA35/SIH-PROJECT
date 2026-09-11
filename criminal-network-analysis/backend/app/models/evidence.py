@@ -18,3 +18,4 @@ class Evidence(Base):
     source: Mapped[str] = mapped_column(String(128), default="Synthetic demo dataset")
     uploaded_by: Mapped[str] = mapped_column(String(64), default="")
     uploaded_at: Mapped[datetime] = mapped_column(DateTime)
+    file_path: Mapped[str] = mapped_column(String(500), default="")

@@ -24,3 +24,6 @@ Thumbs.db
 # Test artifacts
 .pytest_cache/
 *.pdf
+
+# Uploaded evidence files (not synthetic seed data)
+backend/uploads/

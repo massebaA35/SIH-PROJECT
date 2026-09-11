@@ -15,7 +15,7 @@ from fastapi.responses import JSONResponse
 from app.config import get_settings
 from app.routers import (
     alerts, analyze, assistant, audit, auth, cases, cross_case, dashboard,
-    entities, graph, locations, reports, search, time_machine, timeline,
+    entities, evidence, graph, locations, reports, search, time_machine, timeline,
 )
 
 settings = get_settings()
@@ -100,3 +100,4 @@ app.include_router(audit.router)
 app.include_router(assistant.router)
 app.include_router(cross_case.router)
 app.include_router(time_machine.router)
+app.include_router(evidence.router)

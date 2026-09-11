@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     debug: bool = True
 
     database_url: str = f"sqlite:///{(BACKEND_DIR / 'crime_network.db').as_posix()}"
+    uploads_dir: str = str(BACKEND_DIR / "uploads")
 
     jwt_secret_key: str = "change-this-to-a-long-random-string-before-any-real-deployment"
     jwt_algorithm: str = "HS256"
