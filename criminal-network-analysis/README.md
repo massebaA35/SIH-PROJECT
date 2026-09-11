@@ -109,7 +109,27 @@ Open `http://localhost:5180`. The dev server proxies nothing — it calls the ba
 directly at `VITE_API_BASE_URL` (see `frontend/.env.local`), so the backend must
 already be running.
 
-## 8. Demo login
+## 8. Uploading evidence documents
+
+Investigators can upload real documents (not just pasted text) as case evidence from
+the **Entities → NLP Entity Extraction → Upload document** tab in the frontend, or
+directly via `POST /api/evidence/upload` (investigator/administrator role required).
+
+- Accepted formats: `.txt`, `.pdf`, `.docx` — up to 2 MB. Scanned/image-only PDFs
+  (no text layer) aren't supported yet; there's no OCR step in this pass.
+- Every upload is hashed with SHA-256 **before** anything else happens — that hash is
+  both the chain-of-custody fingerprint (shown in the UI, copyable) and the
+  deduplication key. Re-uploading the exact same file (anywhere in the system, not
+  just the same case) is rejected with `409 Conflict` and a pointer to the existing
+  Evidence record, rather than creating a duplicate.
+- Original files are stored under `backend/uploads/<case_id>/`, which is git-ignored —
+  it's local, per-deployment state, not part of the synthetic seed dataset.
+- Extracted text goes through the same offline NLP pipeline as pasted text
+  (`app/ai/nlp_extraction.py`); nothing is written to the case graph until the
+  investigator explicitly reviews and confirms it via `POST /api/analyze/commit`,
+  exactly like the paste-text flow.
+
+## 9. Demo login
 
 Three demo accounts are created by the seed script — **prototype credentials only,
 never reuse or expose these in a real deployment:**
@@ -124,7 +144,7 @@ Analysts can read all investigative data but cannot update alerts or view audit 
 Investigators and Administrators can do both. See [docs/SECURITY.md](docs/SECURITY.md)
 for the full RBAC matrix.
 
-## 9. API documentation
+## 10. API documentation
 
 FastAPI generates interactive documentation automatically from the route/schema
 definitions — no separate doc-build step. With the backend running:
@@ -136,7 +156,7 @@ definitions — no separate doc-build step. With the backend running:
 A hand-written endpoint reference with example requests/responses is also in
 [docs/API.md](docs/API.md).
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
 - **"Only one usage of each socket address..." / `EADDRINUSE`** — something else is
   already listening on the port you asked for (this happened during development: a
@@ -161,8 +181,13 @@ A hand-written endpoint reference with example requests/responses is also in
   punctuation, extend `_PDF_CHAR_MAP` there.
 - **Frontend shows blank pages / stale data** — hard-refresh, and confirm the backend
   is actually running and reachable at `VITE_API_BASE_URL` (check the Network tab).
-- **Want to start over** — delete `backend/crime_network.db` and re-run
-  `python -m seed.seed_db --reset`.
+- **`no such column: evidence.file_path`** — you have a `backend/crime_network.db`
+  created before the evidence-upload feature was added. There's no migration tool in
+  this prototype (schema is created via `Base.metadata.create_all`); either delete the
+  DB and reseed (see below), or add the column in place without losing existing data:
+  `sqlite3 backend/crime_network.db "ALTER TABLE evidence ADD COLUMN file_path VARCHAR(500) DEFAULT ''"`.
+- **Want to start over** — delete `backend/crime_network.db` (and, if you've uploaded
+  evidence documents, `backend/uploads/`) and re-run `python -m seed.seed_db --reset`.
 
 ---
 
